@@ -1,0 +1,19 @@
+{
+  "name": "@definejs/node-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "micty",
+  "email": "mictydeng@qq.com",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/definejs/node-api.git"
+  },
+  "dependencies": {
+    "@definejs/emitter": "^1.1.0",
+    "zlib": "^1.0.5"
+  }
+}
