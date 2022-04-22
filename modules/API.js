@@ -28,11 +28,12 @@ class API {
     }
 
     /**
-    * 
+    * 发起请求。
+    * @param {string} method 必选，请求的方法，只能是 `get` 或 `post`。
     * @param {Object}} [data] 可选，要发送的数据主体。
     * @param {Object} [headers] 可选，要发送的请求头部字段。
     */
-    post(data, headers) {
+    request(method, data, headers) {
         let meta = mapper.get(this);
 
         data = Object.assign({}, meta.data, data);
@@ -40,7 +41,7 @@ class API {
         headers = Object.assign({}, meta.headers, headers);
 
         let opts = {
-            'method': 'POST',
+            'method': method,
             'hostname': meta.hostname,
             'port': meta.port,
             'path': meta.path,
@@ -49,8 +50,9 @@ class API {
 
         let chunks = [];
 
+
         let req = https.request(opts, function (res) {
-            let info = { req, res, };
+            let info = { req, res, opts, };
 
             res.on('data', function (chunk) {
                 chunks.push(chunk);
@@ -78,11 +80,31 @@ class API {
         });
 
         req.on('error', function (error) {
-            meta.emitter.fire('error', [error, { req, }]);
+            meta.emitter.fire('error', [error, { req, opts, }]);
         });
 
+
+        meta.emitter.fire('request', [{ req, opts, }]);
         req.write(data);
         req.end();
+    }
+
+    /**
+    * 发起 GET 请求。
+    * @param {Object}} [data] 可选，要发送的数据主体。
+    * @param {Object} [headers] 可选，要发送的请求头部字段。
+    */
+    get(data, headers) {
+        this.request('get', data, headers);
+    }
+
+    /**
+    * 发起 POST 请求。
+    * @param {Object}} [data] 可选，要发送的数据主体。
+    * @param {Object} [headers] 可选，要发送的请求头部字段。
+    */
+    post(data, headers) {
+        this.request('post', data, headers);
     }
 
     on(...args) {
@@ -90,6 +112,9 @@ class API {
         meta.emitter.on(...args);
     }
 }
+
+
+
 
 API.defaults = require('./API.defaults');
 module.exports = exports = API;
